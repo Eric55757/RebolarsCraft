@@ -715,11 +715,31 @@
   // ──────────────────────────────────────────
   const SUPABASE_URL = 'https://oomencygveiyqjpitrdd.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vbWVuY3lndmVpeXFqcGl0cmRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDA2ODEsImV4cCI6MjA5NDUxNjY4MX0.dJO5hZwVZsjb7wS0lpzO6I5W2IxQ3gtbf962LLYZ9Ac';
-  const ADMIN_PASSWORD = 'RyzenprovavelmentemelhorqueXeon';
+  
 
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  async function loginAdmin() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const { data, error } = await db.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    alert('Login inválido');
+    return;
+  }
+
+  alert('Login OK');
+
+  document.getElementById('loginArea').style.display = 'none';
+  document.getElementById('adminArea').style.display = 'block';
+}
+  
   // ──────────────────────────────────────────
   // STATE
   // ──────────────────────────────────────────
@@ -1027,48 +1047,33 @@
   // ──────────────────────────────────────────
   // ADMIN
   // ──────────────────────────────────────────
-  function updateAdminUI() {
-    const lockBtn = document.getElementById('admin-lock-btn');
-    const fab = document.getElementById('admin-fab');
-    if (isAdmin) {
-      lockBtn.classList.add('admin-active');
-      fab.classList.add('visible');
-    } else {
-      lockBtn.classList.remove('admin-active');
-      fab.classList.remove('visible');
-    }
-  }
+function updateAdminUI() {
+  const lockBtn = document.getElementById('admin-lock-btn');
+  const fab = document.getElementById('admin-fab');
 
-  function handleAdminClick() {
-    if (isAdmin) {
-      isAdmin = false;
-      localStorage.removeItem('steam_admin');
-      updateAdminUI();
-      renderHome();
-      toast('Modo admin desativado.');
-    } else {
-      openModal('modal-login');
-      document.getElementById('admin-password-input').focus();
-    }
+  if (isAdmin) {
+    lockBtn.classList.add('admin-active');
+    fab.classList.add('visible');
+  } else {
+    lockBtn.classList.remove('admin-active');
+    fab.classList.remove('visible');
   }
+}
 
-  function submitLogin() {
-    const val = document.getElementById('admin-password-input').value;
-    const errEl = document.getElementById('login-error');
-    if (val === ADMIN_PASSWORD) {
-      isAdmin = true;
-      localStorage.setItem('steam_admin', 'true');
-      updateAdminUI();
-      closeModal('modal-login');
-      document.getElementById('admin-password-input').value = '';
-      errEl.style.display = 'none';
-      toast('Modo admin ativado!');
-      renderHome();
-    } else {
-      errEl.style.display = 'block';
-      document.getElementById('admin-password-input').value = '';
-    }
+function handleAdminClick() {
+  if (isAdmin) {
+    isAdmin = false;
+    localStorage.removeItem('steam_admin');
+    updateAdminUI();
+    renderHome();
+    toast('Modo admin desativado.');
+  } else {
+    openModal('modal-login');
+
+    // mantém foco no campo certo
+    document.getElementById('admin-email-input').focus();
   }
+}
 
   // ──────────────────────────────────────────
   // ADD GAME
